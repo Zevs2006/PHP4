@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AJAX Форма</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            font-size: 14px;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>AJAX Форма</h1>
+    <form id="userForm">
+        <div class="form-group">
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="age">Возраст:</label>
+            <input type="number" id="age" name="age" required>
+        </div>
+        <div class="form-group">
+            <label>Пол:</label>
+            <label><input type="radio" name="gender" value="Мужской" required> Мужской</label>
+            <label><input type="radio" name="gender" value="Женский"> Женский</label>
+        </div>
+        <div class="form-group">
+            <label for="color">Любимый цвет:</label>
+            <select id="color" name="color" required>
+                <option value="Красный">Красный</option>
+                <option value="Синий">Синий</option>
+                <option value="Зеленый">Зеленый</option>
+                <option value="Желтый">Желтый</option>
+            </select>
+        </div>
+        <button type="button" onclick="submitForm()">Отправить</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function submitForm() {
+            const form = document.getElementById('userForm');
+            const formData = new FormData(form);
+
+            fetch('process.php', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <strong>Результат:</strong><br>
+                    Имя: ${data.name}<br>
+                    Возраст: ${data.age}<br>
+                    Пол: ${data.gender}<br>
+                    Любимый цвет: ${data.color}
+                `;
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = `
+                    <strong>Произошла ошибка:</strong> ${error.message}
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
